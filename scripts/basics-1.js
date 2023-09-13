@@ -1,80 +1,69 @@
-// any that I will type after the slash will be a comment
-//this is not code
-/* 
-this
-will
-span
-many lines
-*/
+//@ts-check
+/** @type {HTMLCanvasElement} */
+//@ts-ignore canvas is an HTMLCanvasElement
+const canvas = document.getElementById("game-canvas");
+/** @type {CanvasRenderingContext2D} */
+//@ts-ignore we know ctx is not null
+const ctx = canvas.getContext("2d");
+canvas.width = 800;
+canvas.height = 600;
 
-console.log("Hello world!");
+class Shape {
+	constructor(startX, startY) {
+		this.x = startX;
+		this.y = startY;
 
-// keywords for declaring variables
+		this.width = 100;
+		this.height = 100;
 
-let firstName = "Blimperr";
-let age = "13";
-let ageString = "13";
-let myMoney = -10000.45;
+		this.color = "red";
 
-//numbers
+		this.speed = 10;
+		this.xDirection = 1;
+		this.yDirection = 1;
+	}
 
-myMoney = "bankrupt";
+	update() {
+		if (this.x < 0 || this.x + this.width > canvas.width) {
+			this.xDirection *= -1;
+		}
 
-//boolians
+		if (this.y < 0 || this.y + this.height > canvas.height) {
+			this.yDirection *= -1;
+		}
 
-let isGameOver = false;
+		this.x += this.speed * this.xDirection;
+		this.y += this.speed * this.yDirection;
+	}
 
-//arrays
-//a variable that holds a "list" of values
-
-let fruits = ["apple", "grapes", "banana"];
-
-console.log(fruits[2]);
-
-console.log(fruits);
-
-// objects
-// have properties and methods.
-
-// pascel case: lowerCaseFirstLetter - variable names
-// camel case: UpperCaseFirstLetter - class definitions or class names
-// kabob case: hyphien-between-words - file names and id's in HTML
-// snake case: UPPER_CASE_UNDERSCORES_BETWEEN - constants
-
-let classRoom = {
-	roomNumber: 129,
-	seats: 35,
-	teacher: {
-		firstName: "billy",
-		lastName: "bob",
-	},
-	students: [
-		{ firstName: "Cade", lastName: "Arney", grade: 8 },
-		{ firstName: "Attacus", lastName: "Brown", grade: 8 },
-	],
-	lightsOn: true,
-	turnLightsOff: function () {
-		this.lightsOn = false;
-		return;
-	},
-};
-console.log(classRoom);
-classRoom.turnLightsOff();
-console.log(classRoom);
-
-let classRoom2 = {
-    roomNumber: 131,
-    seats: 40,
-    teacher: {
-        firstName: "Zack",
-        latName: "Deegan"
-
-    },
-    students: [
-    ],
-    lightsOn: true,
-    turnLightsOff = false(){
-        this.lightsOn = false
-        return;
-    }
+	draw() {
+		ctx.fillStyle = this.color;
+		ctx.fillRect(this.x, this.y, this.width, this.height);
+	}
 }
+
+let shapes = [];
+
+for (let i = 0; i < 20; i++) {
+	let s = new Shape(
+		Math.random() * canvas.width,
+		Math.random() * canvas.height
+	);
+
+	s.speed = Math.random() * 5 + 5;
+
+	shapes.push(s);
+}
+
+let animationLoop = function () {
+	ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+	shapes.forEach((s) => {
+		s.update();
+		s.draw();
+	});
+
+	window.requestAnimationFrame(animationLoop);
+};
+
+window.requestAnimationFrame(animationLoop);
